@@ -1,9 +1,11 @@
+import sys
 from scapy.all import rdpcap, IP, TCP, UDP, ICMP
 
+# Known suspicious ports
 SUSPICIOUS_PORTS = [4444, 6667, 1337, 31337, 9001]
 
 def analyze_pcap(file):
-    print(f"\n Analyzing file: {file}\n")
+    print(f"\nAnalyzing file: {file}\n")
     packets = rdpcap(file)
 
     ips_seen = {}
@@ -21,23 +23,27 @@ def analyze_pcap(file):
             if TCP in packet:
                 port = packet[TCP].dport
                 if port in SUSPICIOUS_PORTS:
-                    alerts.append(f"  ALERT: {src} → {dst} on suspicious port {port}")
+                    alerts.append(f"ALERT: {src} -> {dst} on suspicious port {port}")
 
             if UDP in packet:
                 port = packet[UDP].dport
                 if port in SUSPICIOUS_PORTS:
-                    alerts.append(f"  ALERT: {src} → {dst} on suspicious port {port}")
+                    alerts.append(f"ALERT: {src} -> {dst} on suspicious port {port}")
 
     # Final report
-    print(" Most active IPs:")
+    print("Most active IPs:")
     for ip, count in sorted(ips_seen.items(), key=lambda x: x[1], reverse=True)[:5]:
-        print(f"   {ip} → {count} packets")
+        print(f"   {ip} -> {count} packets")
 
-    print("\n Alerts found:")
+    print("\nAlerts found:")
     if alerts:
         for alert in alerts:
             print(alert)
     else:
         print("   No alerts found.")
 
-analyze_pcap("capture.pcap")
+# Accepts any pcap file as argument or defaults to capture.pcap
+if len(sys.argv) > 1:
+    analyze_pcap(sys.argv[1])
+else:
+    analyze_pcap("capture.pcap")
