@@ -61,7 +61,7 @@ Most active IPs:
 
 Alerts found:
    THREAT INTEL HIT: Known malicious IP 31.184.253.37 -> 192.168.1.8
-   REVERSE SHELL SUSPECTED: 192.168.1.6 -> 255.255.255.255 on port 6667
+   REVERSE SHELL SUSPECTED: 192.168.1.8 -> 203.0.113.50 on port 4444 (Metasploit reverse shell)
 ```
 
 ## Author
