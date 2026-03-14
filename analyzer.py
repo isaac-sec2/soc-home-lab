@@ -1,7 +1,7 @@
 import sys
 import requests
 import ipaddress
-from scapy.all import rdpcap, IP, TCP, UDP, ICMP
+from scapy.all import PcapReader, IP, TCP, UDP, ICMP
 
 # Known suspicious ports commonly used by malware and reverse shells
 SUSPICIOUS_PORTS = {
@@ -37,18 +37,15 @@ def is_internal(ip):
 def analyze_pcap(file, threat_intel):
     """Reads a pcap file and analyzes packets for suspicious activity"""
     print(f"\nAnalyzing file: {file}\n")
-    packets = rdpcap(file)  # load all packets from the pcap file
-
-    ips_seen = {}   # dictionary to count packets per IP
-    alerts = []     # list to store all generated alerts
-
-    for packet in packets:
-        if IP in packet:
-            src = packet[IP].src  # source IP
-            dst = packet[IP].dst  # destination IP
-            if dst == "255.255.255.255":
-              continue
-
+    with PcapReader(file) as packets:
+        ips_seen = {}
+        alerts = []
+        for packet in packets:
+            if IP in packet:
+                src = packet[IP].src
+                dst = packet[IP].dst
+                if dst == "255.255.255.255":
+                    continue  # skip broadcast traffic
             # count how many times each source IP appears
             ips_seen[src] = ips_seen.get(src, 0) + 1
 
@@ -61,7 +58,8 @@ def analyze_pcap(file, threat_intel):
             if TCP in packet:
                 port = packet[TCP].dport  # destination port
                 if port in SUSPICIOUS_PORTS:
-                    alerts.append(f"ALERT: {src} -> {dst} on suspicious port {port}")
+                    threat_name = SUSPICIOUS_PORTS[port]
+                    alerts.append(f"ALERT: {src} -> {dst} on suspicious port {port} ({threat_name})")
                 # reverse shell: internal IP connecting to external IP on suspicious port
                 if is_internal(src) and not is_internal(dst) and port in SUSPICIOUS_PORTS:
                     alerts.append(f"REVERSE SHELL SUSPECTED: {src} -> {dst} on port {port}")
@@ -70,7 +68,8 @@ def analyze_pcap(file, threat_intel):
             if UDP in packet:
                 port = packet[UDP].dport
                 if port in SUSPICIOUS_PORTS:
-                    alerts.append(f"ALERT: {src} -> {dst} on suspicious port {port}")
+                        threat_name = SUSPICIOUS_PORTS[port]
+                        alerts.append(f"ALERT: {src} -> {dst} on suspicious port {port} ({threat_name})")
                 if is_internal(src) and not is_internal(dst) and port in SUSPICIOUS_PORTS:
                     alerts.append(f"REVERSE SHELL SUSPECTED: {src} -> {dst} on port {port}")
 
