@@ -66,4 +66,3 @@ Alerts found:
 
 ## Author
 Isaac | Security Analyst Student | Blue Team
-```
