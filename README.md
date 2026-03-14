@@ -26,13 +26,21 @@ A Python-based network traffic analyzer built for SOC (Security Operations Cente
 | Threat Intel | Cross-references IPs against 597k+ known malicious IPs |
 
 ## Suspicious Ports Monitored
-| Port | Known Usage |
-|------|------------|
-| 4444 | Metasploit reverse shell |
-| 6667 | IRC botnet C2 |
-| 1337 | Common malware port |
-| 31337 | Elite hacker port |
-| 9001 | Tor relay |
+
+| Port | Known Usage | Severity |
+|------|-------------|----------|
+| 4444 | Metasploit reverse shell | High |
+| 6667 | IRC botnet C2 | High |
+| 1337 | Empire/CrackMapExec C2 | High |
+| 31337 | Back Orifice / SliverC2 | High |
+| 9001 | Tor relay | High |
+| 1604 | DarkComet / AsyncRAT | High |
+| 8080 | Ares C2 / Malicious Web Panel | Medium |
+| 9050 | Tor SOCKS proxy | High |
+| 13333 | XMRig coinminer | High |
+| 55553 | Metasploit RPC | High |
+| 21115 | RustDesk unauthorized RMM | High |
+| 50050 | Cobalt Strike default port | High |
 
 ## How to run
 ```bash
