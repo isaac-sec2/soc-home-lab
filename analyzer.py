@@ -95,4 +95,4 @@ print(f"Loaded {len(threat_intel)} known malicious IPs\n")
 if len(sys.argv) > 1:
     analyze_pcap(sys.argv[1], threat_intel)
 else:
-    analyze_pcap("bah.pcap", threat_intel)
+    analyze_pcap("capture.pcap", threat_intel)
