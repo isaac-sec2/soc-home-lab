@@ -3,10 +3,10 @@
 A Python-based network traffic analyzer built for SOC (Security Operations Center) practice.
 
 ## What it does
-- Reads `.pcap` files captured with Wireshark
+- Reads `.pcap` files captured with Wireshark using memory-efficient streaming
 - Identifies the most active IPs in the network
-- Detects suspicious ports commonly used by malware
-- Identifies possible reverse shell connections
+- Detects suspicious ports commonly used by malware and C2 frameworks
+- Identifies possible reverse shell connections (internal → external on suspicious port)
 - Cross-references IPs against a real threat intelligence feed (597k+ known malicious IPs)
 - Generates an alert report like a SOC N1 analyst would
 
@@ -21,12 +21,11 @@ A Python-based network traffic analyzer built for SOC (Security Operations Cente
 ## Detection Capabilities
 | Detection | Description |
 |-----------|-------------|
-| Suspicious Ports | Flags traffic on ports known to be used by malware |
+| Suspicious Ports | Flags traffic on ports known to be used by malware and C2 frameworks |
 | Reverse Shell | Detects internal IPs connecting to external IPs on suspicious ports |
 | Threat Intel | Cross-references IPs against 597k+ known malicious IPs |
 
 ## Suspicious Ports Monitored
-
 | Port | Known Usage | Severity |
 |------|-------------|----------|
 | 4444 | Metasploit reverse shell | High |
@@ -61,7 +60,8 @@ Most active IPs:
 
 Alerts found:
    THREAT INTEL HIT: Known malicious IP 31.184.253.37 -> 192.168.1.8
-   REVERSE SHELL SUSPECTED: 192.168.1.8 -> 203.0.113.50 on port 4444 (Metasploit reverse shell)
+   ALERT: 192.168.1.8 -> 203.0.113.50 on suspicious port 4444 (Metasploit reverse shell)
+   REVERSE SHELL SUSPECTED: 192.168.1.8 -> 203.0.113.50 on port 4444
 ```
 
 ## Author
