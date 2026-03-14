@@ -5,13 +5,25 @@ A Python-based network traffic analyzer built for SOC (Security Operations Cente
 ## What it does
 - Reads `.pcap` files captured with Wireshark
 - Identifies the most active IPs in the network
-- Detects suspicious ports commonly used by malware (IRC botnets, reverse shells)
-- Generates a simple alert report like a SOC N1 analyst would
+- Detects suspicious ports commonly used by malware
+- Identifies possible reverse shell connections
+- Cross-references IPs against a real threat intelligence feed (597k+ known malicious IPs)
+- Generates an alert report like a SOC N1 analyst would
 
 ## Technologies
 - Python 3
 - Scapy
+- Requests
+- ipaddress (native)
 - Wireshark
+- Threat Intel: stamparm/ipsum
+
+## Detection Capabilities
+| Detection | Description |
+|-----------|-------------|
+| Suspicious Ports | Flags traffic on ports known to be used by malware |
+| Reverse Shell | Detects internal IPs connecting to external IPs on suspicious ports |
+| Threat Intel | Cross-references IPs against 597k+ known malicious IPs |
 
 ## Suspicious Ports Monitored
 | Port | Known Usage |
@@ -24,19 +36,26 @@ A Python-based network traffic analyzer built for SOC (Security Operations Cente
 
 ## How to run
 ```bash
-pip install scapy
-python3 analyzer.py
+pip install scapy requests
+python analyzer.py capture.pcap
 ```
 
 ## Sample Output
 ```
+Loading threat intelligence feed...
+Loaded 597601 known malicious IPs
+
+Analyzing file: capture.pcap
+
 Most active IPs:
    192.168.1.8 -> 97 packets
    162.159.133.234 -> 69 packets
 
 Alerts found:
-   ALERT: 192.168.1.6 -> 255.255.255.255 on suspicious port 6667
+   THREAT INTEL HIT: Known malicious IP 31.184.253.37 -> 192.168.1.8
+   REVERSE SHELL SUSPECTED: 192.168.1.6 -> 255.255.255.255 on port 6667
 ```
 
 ## Author
 Isaac | Security Analyst Student | Blue Team
+```
