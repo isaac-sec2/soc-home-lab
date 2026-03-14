@@ -4,7 +4,20 @@ import ipaddress
 from scapy.all import rdpcap, IP, TCP, UDP, ICMP
 
 # Known suspicious ports commonly used by malware and reverse shells
-SUSPICIOUS_PORTS = [4444, 6667, 1337, 31337, 9001]
+SUSPICIOUS_PORTS = {
+    4444: "Metasploit reverse shell",
+    6667: "IRC botnet C2",
+    1337: "Empire/CrackMapExec C2",
+    31337: "Back Orifice/SliverC2",
+    9001: "Tor relay",
+    1604: "DarkComet/AsyncRAT",
+    8080: "Ares C2 / Malicious Web Panel",
+    9050: "Tor SOCKS proxy",
+    13333: "XMRig coinminer",
+    55553: "Metasploit RPC",
+    21115: "RustDesk unauthorized RMM",
+    50050: "Cobalt Strike default port"
+}
 
 def load_threat_intel():
     """Downloads a list of known malicious IPs from a public threat intel feed"""
@@ -33,6 +46,8 @@ def analyze_pcap(file, threat_intel):
         if IP in packet:
             src = packet[IP].src  # source IP
             dst = packet[IP].dst  # destination IP
+            if dst == "255.255.255.255":
+              continue
 
             # count how many times each source IP appears
             ips_seen[src] = ips_seen.get(src, 0) + 1
@@ -50,6 +65,7 @@ def analyze_pcap(file, threat_intel):
                 # reverse shell: internal IP connecting to external IP on suspicious port
                 if is_internal(src) and not is_internal(dst) and port in SUSPICIOUS_PORTS:
                     alerts.append(f"REVERSE SHELL SUSPECTED: {src} -> {dst} on port {port}")
+                    
 
             if UDP in packet:
                 port = packet[UDP].dport
@@ -69,6 +85,7 @@ def analyze_pcap(file, threat_intel):
             print(alert)
     else:
         print("   No alerts found.")
+        
 
 # load threat intel once before analyzing
 print("Loading threat intelligence feed...")
@@ -79,4 +96,4 @@ print(f"Loaded {len(threat_intel)} known malicious IPs\n")
 if len(sys.argv) > 1:
     analyze_pcap(sys.argv[1], threat_intel)
 else:
-    analyze_pcap("capture.pcap", threat_intel)
+    analyze_pcap("bah.pcap", threat_intel)
