@@ -40,12 +40,13 @@ def analyze_pcap(file, threat_intel):
     with PcapReader(file) as packets:
         ips_seen = {}
         alerts = []
-        for packet in packets:
-            if IP in packet:
-                src = packet[IP].src
-                dst = packet[IP].dst
-                if dst == "255.255.255.255":
-                    continue  # skip broadcast traffic
+       for packet in packets:
+            if IP not in packet:
+             continue
+            src = packet[IP].src
+            dst = packet[IP].dst
+            if dst == "255.255.255.255":
+                continue  # skip broadcast traffic
             # count how many times each source IP appears
             ips_seen[src] = ips_seen.get(src, 0) + 1
 
