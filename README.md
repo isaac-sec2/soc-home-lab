@@ -26,7 +26,7 @@ A Python-based network traffic analyzer built for SOC (Security Operations Cente
 |-----------|-------------|
 | Suspicious Ports | Flags traffic on ports known to be used by malware and C2 frameworks |
 | Reverse Shell | Detects internal IPs connecting to external IPs on suspicious ports |
-| Threat Intel | Cross-references IPs against 600k+ known malicious IPs |
+| Threat Intel | Cross-references IPs against 100k+ known malicious IPs |
 | Alert Deduplication | Uses sets to prevent duplicate alerts and reduce alert fatigue |
 
 ## Suspicious Ports Monitored
