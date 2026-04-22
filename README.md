@@ -61,16 +61,20 @@ python analyzer.py --no-threat-intel capture.pcap
 ```
 
 ## Sample Output
+```
 2026-04-18 13:57:01 - INFO - Loaded 601507 IPs from cache (age: 12 minutes)
 2026-04-18 13:57:01 - INFO - Analyzing file: capture.pcap
 2026-04-18 13:57:02 - INFO - Analyzed 15420 packets total.
+
 Top 5 Active IPs:
-192.168.1.8 -> 97 packets
-162.159.133.234 -> 69 packets
+   192.168.1.8 -> 97 packets
+   162.159.133.234 -> 69 packets
+
 Alerts found (3):
-[] ALERT: 192.168.1.8 -> 203.0.113.50 on suspicious port 4444 (Metasploit reverse shell)
-[] REVERSE SHELL SUSPECTED: 192.168.1.8 -> 203.0.113.50 on port 4444
-[*] THREAT INTEL HIT: Known malicious IP 31.184.253.37 -> 192.168.1.8
+   [*] ALERT: 192.168.1.8 -> 203.0.113.50 on suspicious port 4444 (Metasploit reverse shell)
+   [*] REVERSE SHELL SUSPECTED: 192.168.1.8 -> 203.0.113.50 on port 4444
+   [*] THREAT INTEL HIT: Known malicious IP 31.184.253.37 -> 192.168.1.8
+```
 
 ## Author
 Isaac | Security Analyst Student | Blue Team
