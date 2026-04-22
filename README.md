@@ -7,7 +7,7 @@ A Python-based network traffic analyzer built for SOC (Security Operations Cente
 - Identifies the most active IPs in the network
 - Detects suspicious ports commonly used by malware and C2 frameworks
 - Identifies possible reverse shell connections (internal → external on suspicious port)
-- Cross-references IPs against a real threat intelligence feed (600k+ known malicious IPs)
+- Cross-references IPs against a real threat intelligence feed (100k+ known malicious IPs)
 - Caches threat intel locally for 24 hours to avoid redundant downloads
 - Deduplicates alerts using sets to prevent alert fatigue
 - Generates structured output ready for SIEM ingestion
@@ -62,7 +62,7 @@ python analyzer.py --no-threat-intel capture.pcap
 
 ## Sample Output
 ```
-2026-04-18 13:57:01 - INFO - Loaded 601507 IPs from cache (age: 12 minutes)
+2026-04-18 13:57:01 - INFO - Loaded 119863 IPs from cache (age: 12 minutes)
 2026-04-18 13:57:01 - INFO - Analyzing file: capture.pcap
 2026-04-18 13:57:02 - INFO - Analyzed 15420 packets total.
 
