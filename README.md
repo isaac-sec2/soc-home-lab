@@ -3,18 +3,21 @@
 A Python-based network traffic analyzer built for SOC (Security Operations Center) practice.
 
 ## What it does
-- Reads `.pcap` files captured with Wireshark using memory-efficient streaming
+- Reads `.pcap` files using memory-efficient streaming (PcapReader)
 - Identifies the most active IPs in the network
 - Detects suspicious ports commonly used by malware and C2 frameworks
 - Identifies possible reverse shell connections (internal → external on suspicious port)
-- Cross-references IPs against a real threat intelligence feed (597k+ known malicious IPs)
-- Generates an alert report like a SOC N1 analyst would
+- Cross-references IPs against a real threat intelligence feed (600k+ known malicious IPs)
+- Caches threat intel locally for 24 hours to avoid redundant downloads
+- Deduplicates alerts using sets to prevent alert fatigue
+- Generates structured output ready for SIEM ingestion
 
 ## Technologies
 - Python 3
 - Scapy
 - Requests
 - ipaddress (native)
+- argparse (native)
 - Wireshark
 - Threat Intel: stamparm/ipsum
 
@@ -23,7 +26,8 @@ A Python-based network traffic analyzer built for SOC (Security Operations Cente
 |-----------|-------------|
 | Suspicious Ports | Flags traffic on ports known to be used by malware and C2 frameworks |
 | Reverse Shell | Detects internal IPs connecting to external IPs on suspicious ports |
-| Threat Intel | Cross-references IPs against 597k+ known malicious IPs |
+| Threat Intel | Cross-references IPs against 600k+ known malicious IPs |
+| Alert Deduplication | Uses sets to prevent duplicate alerts and reduce alert fatigue |
 
 ## Suspicious Ports Monitored
 | Port | Known Usage | Severity |
@@ -42,27 +46,33 @@ A Python-based network traffic analyzer built for SOC (Security Operations Cente
 | 50050 | Cobalt Strike default port | High |
 
 ## How to run
+
 ```bash
 pip install scapy requests
+
+# Analyze a specific file
 python analyzer.py capture.pcap
+
+# Analyze file in subdirectory
+python analyzer.py pcaps/capture.pcap
+
+# Skip threat intel loading (faster, offline)
+python analyzer.py --no-threat-intel capture.pcap
 ```
 
 ## Sample Output
-```
-Loading threat intelligence feed...
-Loaded 597601 known malicious IPs
-
-Analyzing file: capture.pcap
-
-Most active IPs:
-   192.168.1.8 -> 97 packets
-   162.159.133.234 -> 69 packets
-
-Alerts found:
-   THREAT INTEL HIT: Known malicious IP 31.184.253.37 -> 192.168.1.8
-   ALERT: 192.168.1.8 -> 203.0.113.50 on suspicious port 4444 (Metasploit reverse shell)
-   REVERSE SHELL SUSPECTED: 192.168.1.8 -> 203.0.113.50 on port 4444
-```
+2026-04-18 13:57:01 - INFO - Loaded 601507 IPs from cache (age: 12 minutes)
+2026-04-18 13:57:01 - INFO - Analyzing file: capture.pcap
+2026-04-18 13:57:02 - INFO - Analyzed 15420 packets total.
+Top 5 Active IPs:
+192.168.1.8 -> 97 packets
+162.159.133.234 -> 69 packets
+Alerts found (3):
+[] ALERT: 192.168.1.8 -> 203.0.113.50 on suspicious port 4444 (Metasploit reverse shell)
+[] REVERSE SHELL SUSPECTED: 192.168.1.8 -> 203.0.113.50 on port 4444
+[*] THREAT INTEL HIT: Known malicious IP 31.184.253.37 -> 192.168.1.8
 
 ## Author
 Isaac | Security Analyst Student | Blue Team
+Commit com:
+Update: refactor analyzer with caching, deduplication and argparse
